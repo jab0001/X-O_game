@@ -1,27 +1,26 @@
 <template>
-  <div class="board">
-    <h1 class="board__title">Крестики-нолики</h1>
-    <ul class="board__list">
-      <li
-        class="board__item"
-        v-for="(square, index) in squares"
-        :key="index"
-        @click="makeMove(index)"
-      >
-        {{ square }}
-      </li>
-    </ul>
-    <div class="board__wrapper">
-      <button class="board__btn" @click="resetBoard">Начать заново</button>
-      <p class="board__status" v-if="winner">Победил игрок {{ winner }}</p>
-      <p class="board__status" v-else-if="isBoardFull">Ничья!</p>
+  <div class="main">
+    <h1 class="main__title">Крестики-нолики</h1>
+    <BoardComponent :squares="squares" @makeMove="makeMove" />
+    <div class="main__wrapper">
+      <ButtonComponent @resetBoard="resetBoard" />
+      <StatusComponent :winner="winner" :isBoardFull="isBoardFull" />
     </div>
   </div>
 </template>
 
 <script>
+import BoardComponent from "./components/BoardComponent.vue";
+import ButtonComponent from "./components/ButtonComponent.vue";
+import StatusComponent from "./components/StatusComponent.vue";
+
 export default {
   name: "App",
+  components: {
+    BoardComponent,
+    ButtonComponent,
+    StatusComponent,
+  },
   data() {
     return {
       currentPlayer: "X",
@@ -88,49 +87,15 @@ export default {
   margin-top: 60px;
 }
 
-.board {
+.main {
   &__title {
     text-align: center;
-  }
-
-  &__list {
-    display: flex;
-    flex-wrap: wrap;
-    width: 320px;
-    margin: 0 auto;
-    padding: 0;
   }
 
   &__wrapper {
     margin: 0 auto;
     margin-top: 20px;
     width: 320px;
-  }
-
-  &__btn {
-    display: block;
-    margin: 0 auto;
-  }
-
-  &__status {
-    margin-top: 10px;
-    text-align: center;
-  }
-
-  &__item {
-    border: 1px solid #ccc;
-    width: calc(100% / 3);
-    height: calc(320px / 3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 48px;
-    cursor: pointer;
-    box-sizing: border-box;
-
-    &:hover {
-      background-color: #eee;
-    }
   }
 }
 </style>
