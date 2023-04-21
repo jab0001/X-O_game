@@ -1,16 +1,16 @@
 <template>
   <div class="board">
     <h1 class="board__title">Крестики-нолики</h1>
-    <div class="board__container">
-      <div
-        class="board__square"
+    <ul class="board__list">
+      <li
+        class="board__item"
         v-for="(square, index) in squares"
         :key="index"
         @click="makeMove(index)"
       >
         {{ square }}
-      </div>
-    </div>
+      </li>
+    </ul>
     <div class="board__wrapper">
       <button class="board__btn" @click="resetBoard">Начать заново</button>
       <p class="board__status" v-if="winner">Победил игрок {{ winner }}</p>
@@ -93,11 +93,12 @@ export default {
     text-align: center;
   }
 
-  &__container {
+  &__list {
     display: flex;
     flex-wrap: wrap;
     width: 320px;
     margin: 0 auto;
+    padding: 0;
   }
 
   &__wrapper {
@@ -116,7 +117,7 @@ export default {
     text-align: center;
   }
 
-  &__square {
+  &__item {
     border: 1px solid #ccc;
     width: calc(100% / 3);
     height: calc(320px / 3);
