@@ -1,7 +1,14 @@
 <template>
   <div class="board">
     <h1 class="board__title">Крестики-нолики</h1>
-    <ul class="board__list">
+    <input
+      type="number"
+      v-model="boardSize"
+      @input="resetBoard"
+      min="3"
+      max="10"
+    />
+    <ul class="board__list" :style="{ width: boardSize * 60 + 'px' }">
       <li
         class="board__item"
         v-for="(square, index) in squares"
@@ -25,21 +32,17 @@ export default {
   data() {
     return {
       currentPlayer: "X",
-      squares: Array(9).fill(""),
+      boardSize: 3,
+      squares: [],
       winner: null,
       isBoardFull: false,
       moves: 0,
-      winningCombos: [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-      ],
     };
+  },
+  watch: {
+    boardSize: function () {
+      this.resetBoard();
+    },
   },
   methods: {
     makeMove(index) {
@@ -51,29 +54,77 @@ export default {
       }
     },
     checkForWinner() {
-      for (let combo of this.winningCombos) {
-        let [a, b, c] = combo;
-        if (
-          this.squares[a] &&
-          this.squares[a] === this.squares[b] &&
-          this.squares[a] === this.squares[c]
-        ) {
-          this.winner = this.currentPlayer;
-          break;
+      for (let i = 0; i < this.boardSize; i++) {
+        for (let j = 0; j <= this.boardSize - 3; j++) {
+          if (
+            this.squares[i * this.boardSize + j] &&
+            this.squares[i * this.boardSize + j] ===
+              this.squares[i * this.boardSize + j + 1] &&
+            this.squares[i * this.boardSize + j] ===
+              this.squares[i * this.boardSize + j + 2]
+          ) {
+            this.winner = this.currentPlayer;
+            return;
+          }
         }
       }
 
-      if (!this.winner && this.moves === 9) {
+      for (let i = 0; i <= this.boardSize - 3; i++) {
+        for (let j = 0; j < this.boardSize; j++) {
+          if (
+            this.squares[i * this.boardSize + j] &&
+            this.squares[i * this.boardSize + j] ===
+              this.squares[(i + 1) * this.boardSize + j] &&
+            this.squares[i * this.boardSize + j] ===
+              this.squares[(i + 2) * this.boardSize + j]
+          ) {
+            this.winner = this.currentPlayer;
+            return;
+          }
+        }
+      }
+
+      for (let i = 0; i <= this.boardSize - 3; i++) {
+        for (let j = 0; j <= this.boardSize - 3; j++) {
+          if (
+            this.squares[i * this.boardSize + j] &&
+            this.squares[i * this.boardSize + j] ===
+              this.squares[(i + 1) * this.boardSize + j + 1] &&
+            this.squares[i * this.boardSize + j] ===
+              this.squares[(i + 2) * this.boardSize + j + 2]
+          ) {
+            this.winner = this.currentPlayer;
+            return;
+          }
+          if (
+            this.squares[i * this.boardSize + (this.boardSize - j - 1)] &&
+            this.squares[i * this.boardSize + (this.boardSize - j - 1)] ===
+              this.squares[
+                (i + 1) * this.boardSize + (this.boardSize - j - 2)
+              ] &&
+            this.squares[i * this.boardSize + (this.boardSize - j - 1)] ===
+              this.squares[(i + 2) * this.boardSize + (this.boardSize - j - 3)]
+          ) {
+            this.winner = this.currentPlayer;
+            return;
+          }
+        }
+      }
+
+      if (!this.winner && this.moves === this.boardSize * this.boardSize) {
         this.isBoardFull = true;
       }
     },
     resetBoard() {
       this.currentPlayer = "X";
-      this.squares = Array(9).fill("");
+      this.squares = Array(this.boardSize * this.boardSize).fill("");
       this.winner = null;
       this.isBoardFull = false;
       this.moves = 0;
     },
+  },
+  created() {
+    this.resetBoard();
   },
 };
 </script>
@@ -96,7 +147,6 @@ export default {
   &__list {
     display: flex;
     flex-wrap: wrap;
-    width: 320px;
     margin: 0 auto;
     padding: 0;
   }
@@ -104,7 +154,7 @@ export default {
   &__wrapper {
     margin: 0 auto;
     margin-top: 20px;
-    width: 320px;
+    width: 100%;
   }
 
   &__btn {
@@ -119,8 +169,8 @@ export default {
 
   &__item {
     border: 1px solid #ccc;
-    width: calc(100% / 3);
-    height: calc(320px / 3);
+    width: 60px;
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
